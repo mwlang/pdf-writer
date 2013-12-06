@@ -1,4 +1,4 @@
-#encoding: ISO-8859-1
+#encoding: ASCII-8BIT
 #--
 # PDF::Writer for Ruby.
 #   http://rubyforge.org/projects/ruby-pdf/
@@ -707,15 +707,15 @@ class PDF::Writer
     @arc4.init(@encryption_key) unless @arc4.nil?
 
     check_all_here
-
+    
     xref = []
-
-    content = "%PDF-#{@version}\n%âãÏÓ\n"
+    
+    content = "%PDF-#{@version}\n%âãÏÓ\n".b
     pos = content.size
-
+    
     objects.each do |oo|
       begin
-        cont = oo.to_s.force_encoding("ISO-8859-1")
+        cont = oo.to_s.b
         content << cont
         xref << pos
         pos += cont.size
@@ -783,7 +783,7 @@ class PDF::Writer
 
   def load_font(font, encoding = nil)
     metrics = load_font_metrics(font)
-
+    
     name  = File.basename(font).gsub(/\.afm$/o, "")
 
     encoding_diff = nil
@@ -1385,6 +1385,22 @@ class PDF::Writer
     select_font("Helvetica") if @fonts.empty?
     
     text = text.to_s
+    
+    # address font/character encoding
+    case @fonts[@current_base_font].encoding
+    when 'WinAnsiEncoding' then 
+      text_encoder = Encoding::Windows_1252
+    when 'MacRomanEncoding' then
+      text_encoder = Encoding::MacRoman
+    else
+      text_encoder = nil
+    end
+    
+    unless text_encoder.nil?
+      # attempt to encode the text to the font's encoding
+      # if it fails, just use the text as-is
+      text = text.encode(text_encoder) rescue text
+    end
     
       # If there are any open callbacks, then they should be called, to show
       # the start of the line
