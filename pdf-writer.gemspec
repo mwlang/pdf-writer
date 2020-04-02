@@ -6,7 +6,6 @@ Gem::Specification.new do |s|
   s.email    = "ken@metaskills.net"
   s.homepage = "http://github.com/metaskills/pdf-writer/"
   s.description = "A pure Ruby PDF document creation library."
-  s.has_rdoc = true
   s.authors  = ["Austin Ziegler","Ken Collins"]
   s.autorequire       = ["pdf/writer"]
   s.require_paths     = ["lib"]
